@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/L7.svg</file>
+        <file>res/L1.svg</file>
+        <file>res/L2.svg</file>
+        <file>res/L3.svg</file>
+        <file>res/L4.svg</file>
+        <file>res/L5.svg</file>
+        <file>res/L6.svg</file>
+        <file>res/L8.svg</file>
+        <file>res/L9.svg</file>
+        <file>res/L10.svg</file>
+        <file>res/L11.svg</file>
+        <file>res/L12.svg</file>
+        <file>res/L13.svg</file>
+        <file>res/labels.txt</file>
+    </qresource>
+</RCC>

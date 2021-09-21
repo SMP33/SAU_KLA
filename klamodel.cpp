@@ -66,7 +66,7 @@ bool KLAModel::setParams(const ModelParams& params)
     integratorPhi->setValue(params.phi0);
     sensorOmega->setK(params.k);
     sensorOmega->setSpan(params.gamma);
-    sensorAngle->setK(1);
+    sensorAngle->setK(0.7);
     relay->setActiveOut(params.M_DMS);
     relay->setBackCoeff(params.lambda);
     relay->setValueActive(params.alpha);

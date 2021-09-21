@@ -106,6 +106,15 @@ void MainWindow::onStartButtonClicked()
     ADD_PARAM(dt)
     ADD_PARAM(tmax)
 
+    ChartViewParams p;
+    p.x1 = m_param[marginLeft]->value();
+    p.x2 = m_param[marginRight]->value();
+    p.y1 = m_param[marginTop]->value();
+    p.y2 = m_param[marginBottom]->value();
+    p.dx = m_param[phiStep]->value();
+    p.dy = m_param[dphiStep]->value();
+    p.model = params;
+
     KLAModel* model = new KLAModel;
     model->setParams(params);
 
@@ -116,6 +125,7 @@ void MainWindow::onStartButtonClicked()
 
     m_chart->clear();
     m_chart->show();
+    m_chart->setParams(p);
 
     model->start();
     m_chart->activateWindow();

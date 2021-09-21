@@ -13,6 +13,6 @@
         <file>res/L11.svg</file>
         <file>res/L12.svg</file>
         <file>res/L13.svg</file>
-        <file>res/labels.txt</file>
+        <file>res/labels.md</file>
     </qresource>
 </RCC>

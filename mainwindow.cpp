@@ -19,6 +19,20 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
 {
 
+    QList<int> leftIdx = {
+        alpha,
+        gamma,
+        lambda,
+        phi0,
+        dphi0,
+        M_DMS,
+        M_V,
+        T,
+        tau,
+        k,
+        J,
+    };
+
     QFile f(":/res/labels.md");
     f.open(QIODevice::Text | QIODevice::ReadOnly);
     QString txt = f.readAll();
@@ -86,37 +100,16 @@ MainWindow::~MainWindow()
 void MainWindow::onStartButtonClicked()
 {
 
-    ModelParams params;
+    QMap<Params, double> dParams;
 
-#define ADD_PARAM(x) params.##x = m_param[##x]->value();
-
-    ADD_PARAM(alpha)
-    ADD_PARAM(beta)
-    ADD_PARAM(gamma)
-    ADD_PARAM(lambda)
-    ADD_PARAM(phi0)
-    ADD_PARAM(dphi0)
-    ADD_PARAM(M_DMS)
-    ADD_PARAM(M_DGS)
-    ADD_PARAM(M_V)
-    ADD_PARAM(T)
-    ADD_PARAM(tau)
-    ADD_PARAM(k)
-    ADD_PARAM(J)
-    ADD_PARAM(dt)
-    ADD_PARAM(tmax)
-
-    ChartViewParams p;
-    p.x1 = m_param[marginLeft]->value();
-    p.x2 = m_param[marginRight]->value();
-    p.y1 = m_param[marginTop]->value();
-    p.y2 = m_param[marginBottom]->value();
-    p.dx = m_param[phiStep]->value();
-    p.dy = m_param[dphiStep]->value();
-    p.model = params;
+    for (auto i = int(alpha); i <= tmax; i++) {
+        if (m_param.contains(Params(i))) {
+            dParams.insert(Params(i), m_param[Params(i)]->value());
+        }
+    }
 
     KLAModel* model = new KLAModel;
-    model->setParams(params);
+    model->setParams(dParams);
 
     connect(model, &KLAModel::simulationFinished,
         m_chart, &PhaseTrajectoryChartView::plotTrajectory);
@@ -125,7 +118,7 @@ void MainWindow::onStartButtonClicked()
 
     m_chart->clear();
     m_chart->show();
-    m_chart->setParams(p);
+    m_chart->setParams(dParams);
 
     model->start();
     m_chart->activateWindow();

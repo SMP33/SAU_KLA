@@ -1,34 +1,41 @@
 #pragma once
 
+#include <QMap>
 #include <QObject>
 #include <QThread>
 #include <QVector>
 
 #include "modelblocks.hpp"
 
-struct ModelParams {
-    double alpha;
-    double beta;
-    double gamma;
-    double lambda;
-    double phi0;
-    double dphi0;
-    double M_DMS;
-    double M_DGS;
-    double M_V;
-    double T;
-    double tau;
-    double k;
-    double J;
-    double dt;
-    double tmax;
+enum Params {
+    alpha,
+    beta,
+    gamma,
+    lambda,
+    phi0,
+    dphi0,
+    M_DMS,
+    M_DGS,
+    M_V,
+    T,
+    tau,
+    k,
+    J,
+    marginLeft,
+    marginRight,
+    marginTop,
+    marginBottom,
+    phiStep,
+    dphiStep,
+    dt,
+    tmax
 };
 
 class KLAModel : public QThread {
     Q_OBJECT
 public:
     KLAModel();
-    bool setParams(const ModelParams& params);
+    bool setParams(QMap<Params, double> params);
 
 signals:
     void simulationFinished(QVector<double> integratorPhi, QVector<double> integratorOmega);
@@ -36,8 +43,7 @@ signals:
 private:
     void run() override;
 
-    ModelParams m_params;
-    double t = 0;
+    QMap<Params, double> m_params;
 
     QVector<SOBlock*> m_blocks;
     QVector<double> m_phiTrace;

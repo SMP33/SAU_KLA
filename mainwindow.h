@@ -10,30 +10,6 @@
 #include "klamodel.h"
 #include "phasetrajectorychartview.h"
 
-enum Params {
-    alpha,
-    beta,
-    gamma,
-    lambda,
-    phi0,
-    dphi0,
-    M_DMS,
-    M_DGS,
-    M_V,
-    T,
-    tau,
-    k,
-    J,
-    marginLeft,
-    marginRight,
-    marginTop,
-    marginBottom,
-    phiStep,
-    dphiStep,
-    dt,
-    tmax
-};
-
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
@@ -54,6 +30,7 @@ private:
         bool positiveOnly,
         int row,
         QGridLayout* l);
+
     QPushButton* m_startBtn;
     QMap<Params, QDoubleSpinBox*> m_param;
 

@@ -11,36 +11,37 @@ KLAModel::KLAModel()
 
 void KLAModel::run()
 {
-    int n = int(m_params.tmax / m_params.dt + 1);
+    int n = int(m_params[tmax] / m_params[dt] + 1);
     m_phiTrace.reserve(n);
     m_dphiTrace.reserve(n);
 
-    while (t <= m_params.tmax) {
+    double t = 0;
+    while (t <= m_params[tmax]) {
         m_dphiTrace.push_back(integratorOmega->out());
         m_phiTrace.push_back(integratorPhi->out());
 
         for (auto* block : m_blocks) {
-            block->tick(m_params.dt);
-            t += m_params.dt;
+            block->tick(m_params[dt]);
+            t += m_params[dt];
         }
     }
 
-    m_phiTrace.reserve(n);
-    m_dphiTrace.reserve(n);
+    m_dphiTrace.push_back(integratorOmega->out());
+    m_phiTrace.push_back(integratorPhi->out());
 
     emit simulationFinished(m_phiTrace, m_dphiTrace);
 }
 
-bool KLAModel::setParams(const ModelParams& params)
+bool KLAModel::setParams(QMap<Params, double> params)
 {
+    m_params = params;
+
     if (isRunning())
         return false;
     for (auto* block : m_blocks) {
         delete block;
     }
     m_blocks.clear();
-
-    m_params = params;
 
     integratorOmega = new IntegratorBlock;
     integratorPhi = new IntegratorBlock;
@@ -59,18 +60,19 @@ bool KLAModel::setParams(const ModelParams& params)
     summatorU->addSignal(sensorOmega, -1);
     relay->setSignalIn(summatorU);
     delay->setSignalIn(relay);
-    summatorM->addSignal(delay, 1 / params.J);
-    summatorM->addSignal(&m_params.M_V, 1 / params.J);
+    summatorM->addSignal(delay, 1 / m_params[J]);
 
-    integratorOmega->setValue(params.dphi0);
-    integratorPhi->setValue(params.phi0);
-    sensorOmega->setK(params.k);
-    sensorOmega->setSpan(params.gamma);
+    summatorM->addSignal(&m_params[M_V], 1 / params[J]);
+
+    integratorOmega->setValue(m_params[dphi0]);
+    integratorPhi->setValue(m_params[phi0]);
+    sensorOmega->setK(m_params[k]);
+    sensorOmega->setSpan(m_params[gamma]);
     sensorAngle->setK(0.7);
-    relay->setActiveOut(params.M_DMS);
-    relay->setBackCoeff(params.lambda);
-    relay->setValueActive(params.alpha);
-    delay->setDelay(params.tau, params.dt);
+    relay->setActiveOut(m_params[M_DMS]);
+    relay->setBackCoeff(m_params[lambda]);
+    relay->setValueActive(m_params[alpha]);
+    delay->setDelay(m_params[tau], m_params[dt]);
 
     m_blocks.push_back(integratorOmega);
     m_blocks.push_back(integratorPhi);

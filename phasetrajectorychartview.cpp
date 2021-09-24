@@ -38,51 +38,45 @@ void PhaseTrajectoryChartView::plotTrajectory(QVector<double> m_phi, QVector<dou
     QValueAxis* axisX = new QValueAxis;
     axisX->setLabelFormat("%.3f");
     axisX->setTickType(QValueAxis::TicksDynamic);
-    axisX->setTickInterval(m_params.dx);
+    axisX->setTickInterval(m_params[phiStep]);
 
     chart()->legend()->hide();
 
     QValueAxis* axisY = new QValueAxis;
     axisY->setLabelFormat("%.3f");
     axisY->setTickType(QValueAxis::TicksDynamic);
-    axisY->setTickInterval(m_params.dy);
+    axisY->setTickInterval(m_params[dphiStep]);
 
     QLineSeries* r1 = new QLineSeries;
-    QLineSeries* r2 = new QLineSeries;
-
-    qDebug() << m_params.model.M_DMS;
 
     int n = 1e2;
     for (int i = 0; i < n; i++) {
         double y = y1 + (y2 - y1) * i / n;
 
         double x
-            = m_params.model.alpha
-            - m_params.model.k * (y - m_params.model.gamma)
-            + y * m_params.model.tau;
+            = m_params[alpha] * 2
+            - m_params[k] * (y - m_params[gamma])
+            + y * m_params[tau];
 
-        r1->append(x, y);
+        //        if (m_params[lambda] > 0) {
+        //            x /= m_params[lambda];
+        //        }
+
+        //        if (x < m_params[alpha])
+        {
+            r1->append(x, y);
+        }
     }
 
-    for (int i = 0; i < n; i++) {
-        double y = y1 + (y2 - y1) * i / n;
+    chart()->addSeries(r1);
 
-        double x
-            = m_params.model.alpha * m_params.model.lambda
-            - m_params.model.k * (y - m_params.model.gamma)
-            + y * m_params.model.tau;
+    QLineSeries* r3 = new QLineSeries;
+    chart()->addSeries(r3);
 
-        r2->append(x, y);
+    for (auto* s : chart()->series()) {
+        chart()->setAxisX(axisX, s);
+        chart()->setAxisY(axisY, s);
     }
-
-    //    chart()->addSeries(r1);
-    //    chart()->addSeries(r2);
-
-    chart()->setAxisX(axisX, series);
-    chart()->setAxisY(axisY, series);
-
-    chart()->setAxisX(axisX, r1);
-    chart()->setAxisY(axisY, r1);
 }
 
 void PhaseTrajectoryChartView::clear()
@@ -93,9 +87,9 @@ void PhaseTrajectoryChartView::clear()
     }
 }
 
-void PhaseTrajectoryChartView::setParams(const ChartViewParams& value)
+void PhaseTrajectoryChartView::setParams(QMap<Params, double> params)
 {
-    m_params = value;
+    m_params = params;
 }
 
 void PhaseTrajectoryChartView::closeEvent(QCloseEvent* event)
